@@ -1,0 +1,35 @@
+# ── Config chung (dùng cho tất cả profile) ─────────────────────────────────
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      database: QuanLyVatTu_Mongo
+      username: admin
+      password: admin123
+      authentication-database: admin
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: admin
+    password: admin123
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 2000
+          multiplier: 2.0
+          max-interval: 10000
+
+
+app:
+  ma-nguon: UNKNOWN
