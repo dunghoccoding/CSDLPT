@@ -32,10 +32,7 @@ public class DieuChuyenSubscriberService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    /**
-     * Lắng nghe gói tin Điều chuyển từ Node khác chuyển tới.
-     * Tự động xác định Queue cần nghe dựa trên Profile thông qua @RabbitListener.
-     */
+
     @RabbitListener(queues = "#{ '${app.ma-nguon}' == 'MIEN_BAC' ? '" + RabbitMQConfig.QUEUE_DIEU_CHUYEN_MIEN_BAC + "' : '" + RabbitMQConfig.QUEUE_DIEU_CHUYEN_MIEN_NAM + "' }")
     @Transactional
     public void nhanDieuChuyen(String messageJson) {

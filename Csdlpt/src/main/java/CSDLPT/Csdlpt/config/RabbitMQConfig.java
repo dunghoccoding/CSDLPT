@@ -24,20 +24,14 @@ public class RabbitMQConfig {
     public static final String ROUTING_DC_MIEN_BAC         = "dieuchuyen.MIEN_BAC";
     public static final String ROUTING_DC_MIEN_NAM         = "dieuchuyen.MIEN_NAM";
 
-    // ── Constants Dead Letter Queue ───────────────────────────────────────
     public static final String EXCHANGE_DEAD_LETTER = "X_DeadLetter";
     public static final String QUEUE_DEAD_LETTER    = "Q_DeadLetter";
     public static final String ROUTING_DEAD_LETTER  = "dlq.#";
 
-
-
-    // Giữ lại queue cũ (đồng bộ DanhMucVatTu)
     @Bean
     public Queue dongBoVatTuQueue() {
         return new Queue("Q_DongBoVatTu", true);
     }
-
-    // ── Dead Letter Exchange & Queue ──────────────────────────────────────
     @Bean
     public DirectExchange deadLetterExchange() {
         return new DirectExchange(EXCHANGE_DEAD_LETTER);
@@ -54,20 +48,16 @@ public class RabbitMQConfig {
                 .to(deadLetterExchange)
                 .with(QUEUE_DEAD_LETTER);
     }
-
-    // ── Exchange tồn kho ──────────────────────────────────────────────────
     @Bean
     public TopicExchange tonKhoExchange() {
         return new TopicExchange(EXCHANGE_TON_KHO);
     }
 
-    // ── Exchange Điều chuyển kho ──────────────────────────────────────────
     @Bean
     public TopicExchange dieuChuyenExchange() {
         return new TopicExchange(EXCHANGE_DIEU_CHUYEN);
     }
 
-    // ── Queues (có khai báo DLQ arguments) ───────────────────────────────
     private Map<String, Object> dlqArgs(String queueName) {
         Map<String, Object> args = new HashMap<>();
         args.put("x-dead-letter-exchange", EXCHANGE_DEAD_LETTER);
@@ -103,7 +93,7 @@ public class RabbitMQConfig {
                 .build();
     }
 
-    // ── Bindings ──────────────────────────────────────────────────────────
+
     @Bean
     public Binding bindingMienBac(Queue queueTonKhoMienBac, TopicExchange tonKhoExchange) {
         return BindingBuilder.bind(queueTonKhoMienBac).to(tonKhoExchange).with(ROUTING_MIEN_BAC);
@@ -127,8 +117,4 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(queueDieuChuyenMienNam)
                 .to(dieuChuyenExchange).with(ROUTING_DC_MIEN_NAM);
     }
-
-    // ── Retry được cấu hình qua application.yaml ─────────────────────────
-    // spring.rabbitmq.listener.simple.retry.enabled=true
-    // Khi @RabbitListener throw exception sau MAX_ATTEMPTS lần → message vào DLQ
 }

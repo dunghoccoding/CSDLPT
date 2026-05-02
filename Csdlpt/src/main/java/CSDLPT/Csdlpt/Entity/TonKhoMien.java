@@ -4,18 +4,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-/**
- * Lưu tồn kho từng miền tại trụ sở (MongoDB).
- * ID = maNguon + "_" + maVatTu → upsert tự động khi save().
- */
+
 @Document(collection = "TonKhoMien")
 public class TonKhoMien {
 
     @Id
-    private String id;           // format: "MIEN_BAC_VT001"
+    private String id;
 
     @Field("MaNguon")
-    private String maNguon;      // MIEN_BAC | MIEN_NAM
+    private String maNguon;
 
     @Field("MaKho")
     private String maKho;

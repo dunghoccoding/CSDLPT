@@ -5,18 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TonKhoMessage {
 
-    /**
-     * Loại giao dịch:
-     *  NHAP → TruSo cộng thêm soLuong vào soLuongTon
-     *  XUAT → TruSo trừ soLuong khỏi soLuongTon
-     *  SYNC → TruSo ghi đè tuyệt đối (dùng cho initial sync)
-     */
-    private String loaiGiaoDich; // NHAP | XUAT | SYNC
-    private String maNguon;      // MIEN_BAC | MIEN_NAM
+
+    private String loaiGiaoDich;
+    private String maNguon;
     private String maKho;
     private String maVatTu;
     private String tenVatTu;
-    private Integer soLuong;     // delta (NHAP/XUAT) hoặc tuyệt đối (SYNC)
+    private Integer soLuong;
     private String capNhatLuc;
 
     public TonKhoMessage() {}

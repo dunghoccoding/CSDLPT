@@ -11,13 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * Chạy trên node miền Bắc / miền Nam.
- * Dùng để đồng bộ TOÀN BỘ dữ liệu TON_KHO hiện có lên RabbitMQ
- * để Trụ Sở bắt kịp (initial sync / resync).
- *
- * Gọi: POST /api/vattu/dong-bo-toan-bo
- */
+
 @Profile({"mien-bac", "mien-nam"})
 @Service
 public class DongBoService {
@@ -31,11 +25,6 @@ public class DongBoService {
     @Autowired
     private PhanHeSqlService phanHeSqlService;
 
-    /**
-     * Đọc toàn bộ TON_KHO từ SQL của miền,
-     * publish từng bản ghi với loaiGiaoDich = "SYNC" (ghi đè tuyệt đối).
-     * Trụ Sở nhận được sẽ cập nhật đúng trạng thái hiện tại.
-     */
     public String dongBoToanBo() {
         List<TonKho> tatCaTonKho = tonKhoRepository.findAll();
 
@@ -48,7 +37,6 @@ public class DongBoService {
         int demSo = 0;
 
         for (TonKho tk : tatCaTonKho) {
-            // SYNC = ghi đè tuyệt đối → Trụ Sở sẽ có đúng số lượng hiện tại
             phanHeSqlService.publishTonKho(
                     "SYNC",
                     tk.getMaKho(),

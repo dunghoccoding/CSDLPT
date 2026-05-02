@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 /**
  * Bảng SQL Server phía Trụ Sở — lưu tồn kho tổng hợp từ 2 miền.
  * Table: TON_KHO_TONG_HOP
- * PK: Id = maNguon + "_" + maVatTu  → upsert bằng JPA merge()
+ * PK: Id = maNguon + "_" + maVatTu
  */
 @Entity
 @Table(name = "TON_KHO_TONG_HOP")

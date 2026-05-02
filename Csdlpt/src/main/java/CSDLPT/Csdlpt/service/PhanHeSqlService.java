@@ -37,7 +37,6 @@ public class PhanHeSqlService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // ── Nhập kho (UPSERT: nếu đã có thì cộng thêm) ───────────────────────
     @Transactional
     public String nhapKhoVaBaoTin(VatTuRequest req) {
         try {
@@ -56,15 +55,13 @@ public class PhanHeSqlService {
             System.out.println(">> [SQL " + maNguon + "] Nhập " + soLuongNhap
                     + " | Tổng tồn: " + tonKho.getSoLuongTon());
 
-            // Đồng bộ DanhMucVatTu sang MongoDB (giữ luồng cũ)
+
             String jsonVatTu = objectMapper.writeValueAsString(req);
             rabbitTemplate.convertAndSend("Q_DongBoVatTu", jsonVatTu);
 
-            // Publish NHAP (delta) → Trụ Sở nhận
             publishTonKho("NHAP", req.getMaKho(), req.getMaVatTu(),
                     req.getTenVatTu(), soLuongNhap, now());
 
-            // ── Ghi lịch sử ──────────────────────────────────────────────
             lichSuService.ghiThanhCong("NHAP", maNguon, req.getMaKho(),
                     req.getMaVatTu(), req.getTenVatTu(), soLuongNhap);
 
@@ -78,7 +75,6 @@ public class PhanHeSqlService {
         }
     }
 
-    // ── Xuất kho (trừ số lượng, publish XUAT) ────────────────────────────
     @Transactional
     public String xuatKhoVaBaoTin(XuatKhoRequest req) {
         try {
@@ -103,11 +99,10 @@ public class PhanHeSqlService {
             System.out.println(">> [SQL " + maNguon + "] Xuất " + soLuongXuat
                     + " | Tồn còn lại: " + tonKho.getSoLuongTon());
 
-            // Publish XUAT (delta) → Trụ Sở nhận
+
             publishTonKho("XUAT", req.getMaKho(), req.getMaVatTu(),
                     null, soLuongXuat, now());
 
-            // ── Ghi lịch sử ──────────────────────────────────────────────
             lichSuService.ghiThanhCong("XUAT", maNguon, req.getMaKho(),
                     req.getMaVatTu(), null, soLuongXuat);
 
@@ -121,7 +116,6 @@ public class PhanHeSqlService {
         }
     }
 
-    // ── Điều chuyển kho (Trừ cục bộ & Gửi qua RabbitMQ) ──────────────────
     @Transactional
     public String dieuChuyenKho(DieuChuyenRequest req) {
         try {
@@ -139,22 +133,21 @@ public class PhanHeSqlService {
                 return "Lỗi: Tồn kho không đủ để điều chuyển! Hiện có: " + tonKho.getSoLuongTon();
             }
 
-            // 1. Trừ tồn kho cục bộ
+
             tonKho.setSoLuongTon(tonKho.getSoLuongTon() - soLuongChuyen);
             tonKhoRepository.save(tonKho);
             System.out.println(">> [SQL " + maNguon + "] Điều chuyển XUẤT " + soLuongChuyen
                     + " | Tồn còn lại: " + tonKho.getSoLuongTon());
 
-            // 2. Publish tin nhắn XUAT về Trụ Sở để Replica (dùng hàm cũ)
+
             publishTonKho("XUAT", req.getMaKhoXuat(), req.getMaVatTu(), null, soLuongChuyen, now());
 
-            // 3. Đóng gói tin nhắn gửi sang Node nhận qua RabbitMQ
+
             String jsonDieuChuyen = objectMapper.writeValueAsString(req);
             String routingKey = "dieuchuyen." + req.getMaNguonNhan();
             rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_DIEU_CHUYEN, routingKey, jsonDieuChuyen);
             System.out.println(">> [RabbitMQ] Đã gửi yêu cầu điều chuyển tới: " + routingKey);
 
-            // ── Ghi lịch sử ──────────────────────────────────────────────
             lichSuService.ghiThanhCong("DIEU_CHUYEN_XUAT", maNguon, req.getMaKhoXuat(),
                     req.getMaVatTu(), null, soLuongChuyen);
 
@@ -167,7 +160,6 @@ public class PhanHeSqlService {
         }
     }
 
-    // ── Helper publish lên Exchange ──────────────────────────────────────
     public void publishTonKho(String loaiGiaoDich, String maKho, String maVatTu,
                                String tenVatTu, Integer soLuong, String thoiGian) {
         try {

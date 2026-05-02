@@ -16,14 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Lắng nghe Dead Letter Queue — lưu tất cả message lỗi vào MongoDB.
- * Hoạt động trên TẤT CẢ node (không có @Profile).
- *
- * Khi một message bị reject (throw exception) từ listener gốc,
- * RabbitMQ sẽ chuyển nó sang X_DeadLetter → Q_DeadLetter.
- * Service này nhận và lưu vào MongoDB để admin xem & retry.
- */
+
 @Service
 public class DlqConsumerService {
 
@@ -36,9 +29,6 @@ public class DlqConsumerService {
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    /**
-     * Nhận message từ Dead Letter Queue và lưu vào MongoDB.
-     */
     @RabbitListener(queues = RabbitMQConfig.QUEUE_DEAD_LETTER)
     public void nhanMessageLoi(Message message) {
         String noiDung = new String(message.getBody());
@@ -61,12 +51,6 @@ public class DlqConsumerService {
         dlqRepo.save(dlq);
     }
 
-    /**
-     * Retry một message DLQ: lấy từ MongoDB, re-publish về queue gốc.
-     *
-     * @param dlqId  ID của DlqMessage trong MongoDB
-     * @return kết quả retry
-     */
     public String retryMessage(String dlqId) {
         Optional<DlqMessage> opt = dlqRepo.findById(dlqId);
         if (opt.isEmpty()) {
@@ -79,10 +63,10 @@ public class DlqConsumerService {
         }
 
         try {
-            // Re-publish về queue gốc
+
             rabbitTemplate.convertAndSend(dlq.getQueueNguon(), dlq.getNoiDungMessage());
 
-            // Cập nhật trạng thái
+
             dlq.setTrangThai("DA_RETRY");
             dlq.setSoLanThu(dlq.getSoLanThu() + 1);
             dlq.setThoiGianRetry(LocalDateTime.now().format(FORMATTER));
@@ -97,9 +81,6 @@ public class DlqConsumerService {
         }
     }
 
-    /**
-     * Xóa (đánh dấu) một message DLQ khỏi danh sách chờ.
-     */
     public String xoaMessage(String dlqId) {
         Optional<DlqMessage> opt = dlqRepo.findById(dlqId);
         if (opt.isEmpty()) return "Không tìm thấy message DLQ: " + dlqId;
@@ -110,7 +91,7 @@ public class DlqConsumerService {
         return "Đã đánh dấu xóa message: " + dlqId;
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────
+
     @SuppressWarnings("unchecked")
     private String extractQueueNguon(Message message) {
         try {

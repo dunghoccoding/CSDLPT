@@ -16,14 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-/**
- * Chạy trên node Trụ Sở.
- * Lắng nghe message từ 2 miền, áp dụng delta để cập nhật tồn kho ĐÚNG.
- *
- * NHAP → soLuongTon += soLuong (cộng thêm)
- * XUAT → soLuongTon -= soLuong (trừ đi)
- * SYNC → soLuongTon  = soLuong (ghi đè tuyệt đối — dùng khi initial sync)
- */
+
 @Profile("tru-so")
 @Service
 public class TruSoSubscriberService {
@@ -50,13 +43,13 @@ public class TruSoSubscriberService {
             String thoiGian = LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            // ── Cập nhật MongoDB ─────────────────────────────────────────
+
             apDungDeltaMongo(id, msg, thoiGian);
 
-            // ── Cập nhật SQL Server TruSo ─────────────────────────────────
+
             apDungDeltaSql(id, msg, thoiGian);
 
-            // ── Ghi lịch sử (Trụ Sở ghi nhận) ───────────────────────────
+
             lichSuService.ghiThanhCong(
                     msg.getLoaiGiaoDich() + "_TRUSOGHINHAP",
                     "TRU_SO",
@@ -74,12 +67,10 @@ public class TruSoSubscriberService {
                         "SYNC_TRUSOGHINHAP", "TRU_SO",
                         msg.getMaKho(), msg.getMaVatTu(), msg.getSoLuong(), e.getMessage());
             }
-            // Throw để kích hoạt Retry Mechanism → sau 3 lần → DLQ
             throw new RuntimeException("[TruSoSubscriber] Xử lý thất bại: " + e.getMessage(), e);
         }
     }
 
-    // ── Áp dụng delta vào MongoDB ─────────────────────────────────────────
     private void apDungDeltaMongo(String id, TonKhoMessage msg, String thoiGian) {
         Optional<TonKhoMien> existing = tonKhoMienRepository.findById(id);
 
@@ -99,7 +90,6 @@ public class TruSoSubscriberService {
                 + " " + msg.getSoLuong() + " | " + soLuongHienTai + " → " + soLuongMoi);
     }
 
-    // ── Áp dụng delta vào SQL Server TruSo ───────────────────────────────
     private void apDungDeltaSql(String id, TonKhoMessage msg, String thoiGian) {
         Optional<TonKhoTruSo> existing = tonKhoTruSoRepository.findById(id);
 
@@ -119,12 +109,6 @@ public class TruSoSubscriberService {
                 + " " + msg.getSoLuong() + " | " + soLuongHienTai + " → " + soLuongMoi);
     }
 
-    /**
-     * Tính số lượng tồn kho mới dựa trên loại giao dịch:
-     * NHAP → cộng thêm
-     * XUAT → trừ đi (không nhỏ hơn 0)
-     * SYNC → ghi đè tuyệt đối
-     */
     private int tinhSoLuongMoi(String loaiGiaoDich, int hienTai, int delta) {
         if (delta == 0 && loaiGiaoDich == null) return hienTai;
         return switch (loaiGiaoDich) {

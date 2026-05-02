@@ -9,12 +9,10 @@ import java.util.List;
 @Repository
 public interface DlqMessageRepository extends MongoRepository<DlqMessage, String> {
 
-    /** Lấy tất cả message đang chờ retry */
+
     List<DlqMessage> findByTrangThaiOrderByThoiGianLoiDesc(String trangThai);
 
-    /** Lấy theo queue gốc */
     List<DlqMessage> findByQueueNguonOrderByThoiGianLoiDesc(String queueNguon);
 
-    /** Đếm số message lỗi đang chờ */
     long countByTrangThai(String trangThai);
 }

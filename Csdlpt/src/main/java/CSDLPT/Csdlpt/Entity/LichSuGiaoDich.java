@@ -5,23 +5,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-/**
- * Lưu toàn bộ lịch sử giao dịch kho (Audit Log).
- * Được ghi bởi mọi node (Miền Bắc, Miền Nam, Trụ Sở).
- * Collection: LichSuGiaoDich
- */
 @Document(collection = "LichSuGiaoDich")
 public class LichSuGiaoDich {
 
     @Id
-    private String id;               // UUID tự sinh
+    private String id;
 
     @Field("LoaiGiaoDich")
-    private String loaiGiaoDich;     // NHAP | XUAT | DIEU_CHUYEN_XUAT | DIEU_CHUYEN_NHAP | SYNC
+    private String loaiGiaoDich;
 
     @Field("MaNguon")
     @Indexed
-    private String maNguon;          // MIEN_BAC | MIEN_NAM | TRU_SO
+    private String maNguon;
 
     @Field("MaKho")
     private String maKho;
@@ -37,14 +32,14 @@ public class LichSuGiaoDich {
     private Integer soLuong;
 
     @Field("TrangThai")
-    private String trangThai;        // THANH_CONG | THAT_BAI
+    private String trangThai;
 
     @Field("GhiChu")
-    private String ghiChu;           // Thông báo lỗi nếu THAT_BAI
+    private String ghiChu;
 
     @Field("ThoiGian")
     @Indexed
-    private String thoiGian;         // yyyy-MM-dd HH:mm:ss
+    private String thoiGian;
 
     public LichSuGiaoDich() {}
 
@@ -63,7 +58,7 @@ public class LichSuGiaoDich {
         this.thoiGian = thoiGian;
     }
 
-    // ── Getters & Setters ─────────────────────────────────────────────────
+    // ── Getters & Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getLoaiGiaoDich() { return loaiGiaoDich; }

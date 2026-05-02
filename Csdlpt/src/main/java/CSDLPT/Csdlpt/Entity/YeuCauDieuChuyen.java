@@ -13,16 +13,16 @@ public class YeuCauDieuChuyen {
     private String id;
 
     @Field("maNguonXin")
-    private String maNguonXin; // VD: MIEN_BAC
+    private String maNguonXin;
 
     @Field("maKhoXin")
-    private String maKhoXin; // VD: KB01
+    private String maKhoXin;
 
     @Field("maNguonCho")
-    private String maNguonCho; // VD: MIEN_NAM
+    private String maNguonCho;
 
     @Field("maKhoCho")
-    private String maKhoCho; // VD: KN01
+    private String maKhoCho;
 
     @Field("maVatTu")
     private String maVatTu;
@@ -31,7 +31,7 @@ public class YeuCauDieuChuyen {
     private Integer soLuong;
 
     @Field("trangThai")
-    private String trangThai; // PENDING, APPROVED, REJECTED
+    private String trangThai;
 
     @Field("ngayTao")
     private LocalDateTime ngayTao;

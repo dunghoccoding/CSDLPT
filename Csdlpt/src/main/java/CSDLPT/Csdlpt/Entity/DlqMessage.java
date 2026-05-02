@@ -4,37 +4,32 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-/**
- * Lưu các message bị lỗi (Dead Letter) từ RabbitMQ.
- * Khi một message bị xử lý thất bại nhiều lần, nó sẽ được đẩy vào đây.
- * Admin có thể xem và retry lại từng message.
- */
 @Document(collection = "DlqMessages")
 public class DlqMessage {
 
     @Id
-    private String id;               // UUID tự sinh
+    private String id;
 
     @Field("QueueNguon")
-    private String queueNguon;       // Queue gốc message từ đó bị rejected
+    private String queueNguon;
 
     @Field("NoiDungMessage")
-    private String noiDungMessage;   // JSON content của message gốc
+    private String noiDungMessage;
 
     @Field("LyDoLoi")
-    private String lyDoLoi;          // Error message / exception message
+    private String lyDoLoi;
 
     @Field("SoLanThu")
-    private Integer soLanThu;        // Số lần đã thử xử lý
+    private Integer soLanThu;
 
     @Field("TrangThai")
-    private String trangThai;        // DANG_CHO | DA_RETRY | DA_XOA
+    private String trangThai;
 
     @Field("ThoiGianLoi")
-    private String thoiGianLoi;      // Thời điểm message vào DLQ
+    private String thoiGianLoi;
 
     @Field("ThoiGianRetry")
-    private String thoiGianRetry;    // Lần retry gần nhất (null nếu chưa retry)
+    private String thoiGianRetry;
 
     public DlqMessage() {}
 
@@ -49,7 +44,7 @@ public class DlqMessage {
         this.thoiGianLoi = thoiGianLoi;
     }
 
-    // ── Getters & Setters ─────────────────────────────────────────────────
+    // ── Getters & Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getQueueNguon() { return queueNguon; }

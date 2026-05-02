@@ -32,7 +32,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        
+
         // Xác định Role được phép thao tác dựa vào Node đang chạy
         String allowedRole = "MIEN_BAC".equals(maNguon) ? "USER_MB" : 
                              ("MIEN_NAM".equals(maNguon) ? "USER_MN" : "NONE");
@@ -40,20 +40,20 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Disable CSRF for REST APIs
             .authorizeHttpRequests(auth -> auth
-                // Tài nguyên Frontend
+
                 .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/favicon.ico").permitAll()
                 
                 .requestMatchers("/api/auth/**").permitAll() // Cho phép đăng nhập không cần token
                 
-                // Trụ sở (Admin)
+
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/tong-hop/**").hasRole("ADMIN")
                 
-                // Các chi nhánh: Chỉ role tương ứng với miền mới được thao tác kho
+
                 .requestMatchers("/api/vattu/nhap-kho", "/api/vattu/xuat-kho", "/api/vattu/ton-kho").hasRole(allowedRole)
                 .requestMatchers("/api/vattu/dieu-chuyen", "/api/yeu-cau/**").hasAnyRole(allowedRole, "ADMIN")
                 
-                // Lịch sử giao dịch: Mọi role đều xem được
+
                 .requestMatchers("/api/lich-su/**").hasAnyRole("ADMIN", "USER_MB", "USER_MN")
 
                 .anyRequest().authenticated()

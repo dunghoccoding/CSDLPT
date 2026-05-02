@@ -33,40 +33,25 @@ public class VatTuController {
     @Autowired
     private DongBoService dongBoService;
 
-    /**
-     * Nhập kho: cộng thêm số lượng, publish NHAP → Trụ Sở
-     * POST /api/vattu/nhap-kho
-     */
+
     @PostMapping("/nhap-kho")
     public ResponseEntity<String> nhapKho(@RequestBody VatTuRequest request) {
         System.out.println("--- YÊU CẦU NHẬP KHO ---");
         return ResponseEntity.ok(phanHeSqlService.nhapKhoVaBaoTin(request));
     }
 
-    /**
-     * Xuất kho: trừ số lượng, publish XUAT → Trụ Sở
-     * POST /api/vattu/xuat-kho
-     */
     @PostMapping("/xuat-kho")
     public ResponseEntity<String> xuatKho(@RequestBody XuatKhoRequest request) {
         System.out.println("--- YÊU CẦU XUẤT KHO ---");
         return ResponseEntity.ok(phanHeSqlService.xuatKhoVaBaoTin(request));
     }
 
-    /**
-     * Điều chuyển kho: trừ ở node này, gửi RabbitMQ sang node khác
-     * POST /api/vattu/dieu-chuyen
-     */
     @PostMapping("/dieu-chuyen")
     public ResponseEntity<String> dieuChuyen(@RequestBody DieuChuyenRequest request) {
         System.out.println("--- YÊU CẦU ĐIỀU CHUYỂN KHO ---");
         return ResponseEntity.ok(phanHeSqlService.dieuChuyenKho(request));
     }
 
-    /**
-     * Initial sync: đẩy toàn bộ tồn kho hiện có lên Trụ Sở (loại SYNC)
-     * POST /api/vattu/dong-bo-toan-bo
-     */
     @PostMapping("/dong-bo-toan-bo")
     public ResponseEntity<String> dongBoToanBo() {
         System.out.println("--- YÊU CẦU ĐỒNG BỘ TOÀN BỘ ---");

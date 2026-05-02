@@ -15,71 +15,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Chỉ kích hoạt ở node Trụ Sở.
- *
- * SQL Server Transactional Replication tự đồng bộ:
- *   QuanLyKho_MienBac.TON_KHO  →  QuanLyKho_TruSo.TON_KHO_MIEN_BAC
- *   QuanLyKho_MienNam.TON_KHO  →  QuanLyKho_TruSo.TON_KHO_MIEN_NAM
- *
- * Trụ Sở chỉ cần ĐỌC từ 2 bảng replica này.
- */
+
 @Profile("tru-so")
 @RestController
 @RequestMapping("/api/tong-hop")
 public class TruSoController {
 
-    // ── SQL replica (do SQL Server tự đồng bộ) ────────────────────────────
     @Autowired
     private TonKhoReplicaMienBacRepository replicaBacRepo;
 
     @Autowired
     private TonKhoReplicaMienNamRepository replicaNamRepo;
 
-    // ── MongoDB (do RabbitMQ đồng bộ DanhMucVatTu) ───────────────────────
     @Autowired
     private TonKhoMienRepository tonKhoMienRepository;
 
-    /**
-     * Xem tồn kho Miền Bắc (SQL replica — chính xác nhất).
-     * GET /api/tong-hop/ton-kho/mien-bac
-     */
     @GetMapping("/ton-kho/mien-bac")
     public ResponseEntity<List<TonKhoReplicaMienBac>> xemMienBac() {
         return ResponseEntity.ok(replicaBacRepo.findAll());
     }
 
-    /**
-     * Xem tồn kho Miền Nam (SQL replica — chính xác nhất).
-     * GET /api/tong-hop/ton-kho/mien-nam
-     */
     @GetMapping("/ton-kho/mien-nam")
     public ResponseEntity<List<TonKhoReplicaMienNam>> xemMienNam() {
         return ResponseEntity.ok(replicaNamRepo.findAll());
     }
 
-    /**
-     * Xem tồn kho cả 2 miền qua MongoDB (near-realtime qua RabbitMQ).
-     * GET /api/tong-hop/ton-kho/mongo
-     */
     @GetMapping("/ton-kho/mongo")
     public ResponseEntity<List<TonKhoMien>> xemQuaMongo() {
         return ResponseEntity.ok(tonKhoMienRepository.findAll());
     }
 
-    /**
-     * Xem theo miền qua MongoDB.
-     * GET /api/tong-hop/ton-kho/mongo/MIEN_BAC
-     */
     @GetMapping("/ton-kho/mongo/{maNguon}")
     public ResponseEntity<List<TonKhoMien>> xemMongoTheoMien(@PathVariable String maNguon) {
         return ResponseEntity.ok(tonKhoMienRepository.findByMaNguon(maNguon));
     }
 
-    /**
-     * Tìm kiếm tồn kho theo mã vật tư (query cả SQL replica + MongoDB).
-     * GET /api/tong-hop/ton-kho/tim-kiem?maVatTu=VT001
-     */
     @GetMapping("/ton-kho/tim-kiem")
     public ResponseEntity<Map<String, Object>> timKiemTheoVatTu(
             @RequestParam String maVatTu) {
@@ -109,11 +79,6 @@ public class TruSoController {
 
         return ResponseEntity.ok(ketQua);
     }
-
-    /**
-     * Tổng hợp tồn kho toàn quốc: tổng số lượng mỗi miền.
-     * GET /api/tong-hop/ton-kho/tong-quan
-     */
     @GetMapping("/ton-kho/tong-quan")
     public ResponseEntity<Map<String, Object>> tongQuan() {
         int tongBac = replicaBacRepo.findAll().stream()
