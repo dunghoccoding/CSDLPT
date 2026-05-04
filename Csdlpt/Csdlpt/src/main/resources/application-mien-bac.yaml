@@ -1,0 +1,16 @@
+# ── Profile: Miền Bắc (port 8081) ───────────────────────────────────────────
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost\SERVER1;databaseName=QuanLyKho_MienBac;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: P@ssw0rd2026!
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+app:
+  ma-nguon: MIEN_BAC
