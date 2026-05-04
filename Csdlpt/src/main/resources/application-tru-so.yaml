@@ -1,0 +1,16 @@
+# ── Profile: Trụ Sở (port 8080) ─────────────────────────────────────────────
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost\SERVER3;databaseName=QuanLyKho_TruSo;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: P@ssw0rd2026!
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+app:
+  ma-nguon: TRU_SO

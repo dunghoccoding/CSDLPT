@@ -1,0 +1,16 @@
+# ── Profile: Miền Nam (port 8082) ───────────────────────────────────────────
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost\SERVER2;databaseName=QuanLyKho_MienNam;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: P@ssw0rd2026!
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+app:
+  ma-nguon: MIEN_NAM
